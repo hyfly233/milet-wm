@@ -27,7 +27,8 @@ public class OrderMsgService {
     @Autowired
     DeliverymanDao deliverymanDao;
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    ObjectMapper objectMapper;
 
     DeliverCallback deliverCallback = (consumerTag, message) -> {
         String messageBody = new String(message.getBody());
@@ -35,14 +36,14 @@ public class OrderMsgService {
         ConnectionFactory connectionFactory = new ConnectionFactory();
         connectionFactory.setHost("localhost");
         try {
-            OrderMsgDto orderMessageDTO = objectMapper.readValue(messageBody, OrderMsgDto.class);
+            OrderMsgDto orderMsgDto = objectMapper.readValue(messageBody, OrderMsgDto.class);
             List<DeliverymanPo> deliverymanPoList = deliverymanDao.selectAvaliableDeliveryman(DeliverymanStatus.AVAILABLE.value);
-            orderMessageDTO.setDeliverymanId(deliverymanPoList.get(0).getId());
-            log.info("onMessage:restaurantOrderMessageDTO:{}", orderMessageDTO);
+            orderMsgDto.setDeliverymanId(deliverymanPoList.get(0).getId());
+            log.info("onMessage:restaurantOrderMessageDTO:{}", orderMsgDto);
 
             try (Connection connection = connectionFactory.newConnection();
                  Channel channel = connection.createChannel()) {
-                String messageToSend = objectMapper.writeValueAsString(orderMessageDTO);
+                String messageToSend = objectMapper.writeValueAsString(orderMsgDto);
                 channel.basicPublish("exchange.order.restaurant", "key.order", null, messageToSend.getBytes());
             }
         } catch (JsonProcessingException | TimeoutException e) {

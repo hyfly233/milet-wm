@@ -7,5 +7,5 @@ import java.util.concurrent.TimeoutException;
 
 public interface OrderService {
 
-    void createOrder(OrderCreateVo createVo) throws IOException, TimeoutException;
+    void createOrder(OrderCreateVo createVo) throws IOException, TimeoutException, InterruptedException;
 }

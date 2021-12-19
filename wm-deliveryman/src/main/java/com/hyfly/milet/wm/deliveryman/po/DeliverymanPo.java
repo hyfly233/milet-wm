@@ -11,7 +11,7 @@ import java.util.Date;
 public class DeliverymanPo {
     private Integer id;
     private String name;
-    private String district;
+//    private String district;
     /**
      * {@link DeliverymanStatus}
      */
